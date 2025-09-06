@@ -305,3 +305,48 @@ PARAM_DEFINE_INT32(MC_BAT_SCALE_EN, 0);
  * @group Multicopter Rate Control
  */
 PARAM_DEFINE_FLOAT(MC_YAW_TQ_CUTOFF, 2.f);
+
+
+/**
+ * Enable Sliding Mode Control (SMC) for rate control
+ *
+ * 0: Use default PID rate controller
+ * 1: Use Sliding Mode Controller (SMC)
+ *
+ * @boolean
+ * @group Multicopter Rate Control
+ */
+PARAM_DEFINE_INT32(MC_USE_SMC, 0);
+
+/**
+ * Sliding Mode Control Lambda (sliding surface slope)
+ *
+ * Applied per axis (roll, pitch, yaw).
+ *
+ * @min 0.0
+ * @decimal 3
+ * @increment 0.01
+ * @group Multicopter Rate Control
+ */
+PARAM_DEFINE_FLOAT(MC_SMC_L_ROLL, 0.001f);
+PARAM_DEFINE_FLOAT(MC_SMC_L_PITCH, 0.001f);
+PARAM_DEFINE_FLOAT(MC_SMC_L_YAW, 0.001f);
+
+/**
+ * Sliding Mode Control Gain k (switching term)
+ *
+ * Applied per axis (roll, pitch, yaw).
+ *
+ * @min 0.0
+ * @decimal 3
+ * @increment 0.01
+ * @group Multicopter Rate Control
+ */
+PARAM_DEFINE_FLOAT(MC_SMC_K_ROLL, 0.005f);
+PARAM_DEFINE_FLOAT(MC_SMC_K_PITCH, 0.005f);
+PARAM_DEFINE_FLOAT(MC_SMC_K_YAW, 0.005f);
+
+
+
+
+
