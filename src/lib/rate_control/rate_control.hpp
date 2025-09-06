@@ -100,6 +100,17 @@ public:
 	 * Set the integral term to 0 to prevent windup
 	 * @see _rate_int
 	 */
+
+	 
+	matrix::Vector3f updateSMC(const matrix::Vector3f &rate_sp,
+                            	   const matrix::Vector3f &rate,
+                                   const matrix::Vector3f &angular_accel,
+                                   float dt,
+                                   bool landed);
+				   
+	void setSMCGains(const matrix::Vector3f &L, const matrix::Vector3f &k);
+
+
 	void resetIntegral() { _rate_int.zero(); }
 
 	/**
@@ -136,4 +147,6 @@ private:
 	// Feedback from control allocation
 	matrix::Vector<bool, 3> _control_allocator_saturation_negative;
 	matrix::Vector<bool, 3> _control_allocator_saturation_positive;
+	matrix::Vector3f _smc_L{1.f, 1.f, 1.f};
+	matrix::Vector3f _smc_k{0.1f, 0.1f, 0.1f};
 };
