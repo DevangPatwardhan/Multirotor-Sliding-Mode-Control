@@ -47,6 +47,12 @@ void RateControl::setPidGains(const Vector3f &P, const Vector3f &I, const Vector
 	_gain_d = D;
 }
 
+void RateControl::setSMCGains(const Vector3f &L, const Vector3f &k)
+{
+	_smc_L = L;
+	_smc_k = k;
+}
+
 void RateControl::setSaturationStatus(const Vector3<bool> &saturation_positive,
 				      const Vector3<bool> &saturation_negative)
 {
@@ -84,6 +90,38 @@ Vector3f RateControl::update(const Vector3f &rate, const Vector3f &rate_sp, cons
 
 	return torque;
 }
+
+matrix::Vector3f RateControl::updateSMC(const matrix::Vector3f &rate_sp,
+                                        const matrix::Vector3f &rate,
+                                        const matrix::Vector3f &angular_accel,
+                                        float dt,
+                                        bool landed)
+{
+    matrix::Vector3f torque{0.f, 0.f, 0.f};
+
+    if (landed) {
+        return torque;
+    }
+
+    matrix::Vector3f e = rate_sp - rate;
+
+
+    matrix::Vector3f s = _smc_L.emult(e); 
+
+ 
+    const float eps = 0.02f; 
+    for (int i = 0; i < 3; i++) {
+        float sat_s = s(i) / fmaxf(eps, fabsf(s(i))); 
+        torque(i) = _smc_L(i) * e(i) - _smc_k(i) * sat_s;
+
+ 
+        torque(i) = math::constrain(torque(i), -0.01f, 0.01f);
+    }
+
+    return torque;
+}
+
+
 
 void RateControl::updateIntegral(Vector3f &rate_error, const float dt)
 {
