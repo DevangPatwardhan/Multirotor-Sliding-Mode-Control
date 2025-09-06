@@ -215,9 +215,20 @@ MulticopterRateControl::Run()
 				_rate_control.setSaturationStatus(saturation_positive, saturation_negative);
 			}
 
-			// run rate controller
-			Vector3f torque_setpoint =
-				_rate_control.update(rates, _rates_setpoint, angular_accel, dt, _maybe_landed || _landed);
+			// run rate controller (switchable between PID and SMC)
+			Vector3f torque_setpoint;
+
+			if (_param_mc_use_smc.get() == 1) {
+				// Sliding Mode Control path
+				torque_setpoint = _rate_control.updateSMC(rates, _rates_setpoint, angular_accel, dt,
+									  _maybe_landed || _landed);
+			} else {
+				// Default PID path
+				torque_setpoint = _rate_control.update(rates, _rates_setpoint, angular_accel, dt,
+									_maybe_landed || _landed);
+			}
+
+
 
 			// apply low-pass filtering on yaw axis to reduce high frequency torque caused by rotor acceleration
 			torque_setpoint(2) = _output_lpf_yaw.update(torque_setpoint(2), dt);
